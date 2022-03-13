@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 
 import tools
 
-start = datetime.strptime('2021-12-01', '%Y-%m-%d')
+start = datetime.strptime('2021-01-01', '%Y-%m-%d')
 end = datetime.strptime('2021-12-31', '%Y-%m-%d')
 
 

@@ -1,3 +1,4 @@
+import string
 from configparser import ConfigParser
 
 import psycopg2
@@ -39,3 +40,28 @@ class DbConnect:
             user=self.username,
             password=self.password
         )
+
+    def db_populate(self, data: dict, conn) -> bool:
+        rows = []
+        for row in data:
+            rows.append((row['CNPJ_FUNDO'].translate(str.maketrans('', '', string.punctuation)), row['VL_QUOTA'], row['DT_COMPTC']))
+
+        with conn.cursor() as cursor:
+            print('Starting query setup')
+            args_str = ','.join(cursor.mogrify('(%s, %s, %s)', row).decode('UTF-8') for row in rows)
+            print('Inserting into database')
+            cursor.execute(f"""
+                INSERT INTO fund_report (cnpj, quote_value, date_report)
+                VALUES {args_str}
+            """)
+    
+        return True
+
+    def db_select(self, conn, args={}):
+        with conn.cursor() as cursor:
+            args_str = cursor.mogrify('CNPJ = %s')
+            cursor.execute(f"""
+                SELECT quote_value, date_report
+                FROM fund_report
+                WHERE {}
+            """)
