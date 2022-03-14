@@ -24,4 +24,4 @@ Executar o arquivo `core.py` e fazer as requisições necessárias para o endere
 
 `invest_value`: É o valor que seria investido na data inicial. O retorno desta chamada contém o rendimento da data inicial até a data final e quanto seria a cota da conta caso o valor investido fosse o informado.
 
-`return`: Este parametro atualmente pode receber o valor `full`. O retorno rá incluir as indicações diárias de rendimento. Caso seja utilizado junto ao parametro `invest_value` estas indicações levam en consideração o valor informado.
+`return`: Este parametro atualmente pode receber o valor `full`. O retorno rá incluir as indicações diárias de rendimento. Caso seja utilizado junto ao parametro `invest_value` estas indicações levam em consideração o valor informado.
