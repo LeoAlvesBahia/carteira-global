@@ -1,5 +1,6 @@
 import csv
 from itertools import cycle
+from pickletools import float8
 import string
 from datetime import datetime
 from io import StringIO
@@ -8,14 +9,14 @@ from urllib.request import urlopen
 from database.DbConnect import DbConnect, db_populate
 
 
-def csv_to_dict(url) -> csv.DictReader:
+def csv_to_dict(url: str) -> csv.DictReader:
     print(f'Downloading file {url}')
     data = urlopen(url).read().decode('UTF-8')
     print(f'Download finished')
     data_file = StringIO(data)
     return csv.DictReader(data_file, delimiter=';')
 
-def crawler(url: str):
+def crawler(url: str) -> bool:
     data = csv_to_dict(url)
 
     db = DbConnect('dev')
@@ -41,3 +42,16 @@ def check_cnpj(cnpj: str) -> bool:
             return False
 
     return True
+
+def get_factor(data) -> float8:
+    start_quote = data[0]['quote_value']
+    end_quote = data[-1]['quote_value']
+
+    factor = start_quote / end_quote
+
+    return factor
+
+def get_rentability(factor) -> float8:
+    rentab = (factor - 1) * 100
+
+    return rentab

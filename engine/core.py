@@ -31,20 +31,28 @@ def rentability(cnpj):
             cnpj=cnpj
         )
 
-    start_quote = response[0]['quote_value']
-    print(start_quote)
-    end_quote = response[-1]['quote_value']
-    print(end_quote)
+    rentab = tools.get_rentability(tools.get_factor(response))
 
-    factor = start_quote / end_quote
-
-    rentab = (factor - 1) * 100
+    if 'invest_value' in args.keys():
+        return {
+            'rentability': rentab,
+            'equity_value': args['invest_value'] * rentab
+        }
 
     return {
-        'data': rentab
+        'rentability': rentab
     }
 
+@app.route('/funds/<cnpj>/rentability')
+def invest_value(cnpj):
+    if not tools.check_cnpj(cnpj):
+        return 'CNPJ informado é inválido.', 500
 
+    args = request.args.to_dict()
+    if 'init_date' not in args.keys():
+        raise TypeError('init_date parameter missing')
+    if 'end_date' not in args.keys():
+        raise TypeError('end_date parameter missing')
 
 if __name__ == '__main__':
     app.run()
