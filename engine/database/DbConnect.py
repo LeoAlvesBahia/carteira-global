@@ -58,7 +58,7 @@ def db_populate(data: dict, conn: psycopg2.extensions.connection) -> bool:
 
     return True
 
-def db_select(conn: psycopg2.extensions.connection, init_date: datetime.datetime, end_date: datetime.datetime, cnpj: str='%%') -> list:
+def db_select(conn: psycopg2.extensions.connection, init_date: datetime, end_date: datetime, cnpj: str='%%') -> list:
     print(type(end_date))
     with conn.cursor() as cursor:
         args_str = cursor.mogrify(
