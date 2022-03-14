@@ -16,7 +16,7 @@ O projeto se utiliza do arquivo `engine/database/database.ini` com os dados para
 O banco de dados pode ser populado através do script `crawler_core.py`
 
 ## Utilização
-Executar o arquivo `core.py` e fazer as requisições necessárias para o endereço `http://127.0.0.1:5000/funds/{cnpj}/rentability`. Este endereço aceita os seguintes parametros:
+Executar o arquivo `core.py` e fazer as requisições necessárias para o endereço `http://{host}:{porta}/funds/{cnpj}/rentability`. Este endereço aceita os seguintes parametros:
 
 `init_date`: Deve ser uma data no formato YYYY-MM-DD. É a data inicial para a busca no banco de dados. Se nenhuma data for indicada a busca será feita a partir da data 2021-01-01. O retorno desta chamada é o rendimento da data final em relação a data final.
 
