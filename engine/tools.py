@@ -1,7 +1,5 @@
 import csv
 from itertools import cycle
-import string
-from datetime import datetime
 from io import StringIO
 from urllib.request import urlopen
 
@@ -50,11 +48,11 @@ def get_rentability(data: list) -> float:
 
     return factor - 1
 
-def full_return(response: list, invest_value=None):
+def full_return(response: list, invest_value: str=None) -> dict:
     data = [{
         'date_report': response[0]['date_report'],
         'rentability': 0,
-        'equity_value': response[0]['quote_value']
+        'equity_value': float(invest_value) if invest_value else response[0]['quote_value']
     }]
     for i in range(1, len(response)):
         rentab = get_rentability([response[i-1], response[i]])

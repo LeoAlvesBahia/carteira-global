@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 
 @app.route('/funds/<cnpj>/rentability')
-def rentability(cnpj):
+def rentability(cnpj: str) -> dict:
     if not tools.check_cnpj(cnpj):
         return 'CNPJ informado é inválido.', 500
 
@@ -21,7 +21,7 @@ def rentability(cnpj):
         init_date = datetime.strptime(args.get('init_date', '2021-01-01'), '%Y-%m-%d')
         end_date = datetime.strptime(args.get('end_date', '2021-12-31'), '%Y-%m-%d')
     except ValueError:
-        raise ValueError('Incorrect date format. Date should be YYYY-MM-DD')
+        return 'Incorrect date format. Date should be YYYY-MM-DD', 500
 
     db = DbConnect('dev')
     with db.db_connect() as conn:
@@ -31,6 +31,8 @@ def rentability(cnpj):
             end_date=end_date,
             cnpj=cnpj
         )
+    if not response:
+        return 'Range of date not found in database', 500
 
     if 'full' == args.get('return', 'init_final'):
         return tools.full_return(response, args.get('invest_value', None))
@@ -44,17 +46,6 @@ def rentability(cnpj):
     return {
         'rentability': rentab
     }
-
-@app.route('/funds/<cnpj>/rentability')
-def invest_value(cnpj):
-    if not tools.check_cnpj(cnpj):
-        return 'CNPJ informado é inválido.', 500
-
-    args = request.args.to_dict()
-    if 'init_date' not in args.keys():
-        raise TypeError('init_date parameter missing')
-    if 'end_date' not in args.keys():
-        raise TypeError('end_date parameter missing')
 
 if __name__ == '__main__':
     app.run()

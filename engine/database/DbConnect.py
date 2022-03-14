@@ -8,7 +8,7 @@ import psycopg2
 class DbConnect:
     """Database class
     """
-    def __init__(self, env):
+    def __init__(self, env: str):
         db = self.read_config(env)
 
         self.host = db.get('host')
@@ -17,7 +17,7 @@ class DbConnect:
         self.username = db.get('user')
         self.password = db.get('password')
 
-    def read_config(self, env: str, filename='engine/database/database.ini') -> dict:
+    def read_config(self, env: str, filename: str='engine/database/database.ini') -> dict:
         parser = ConfigParser()
         print(f'Reading database configuration file: {filename}')
         parser.read(filename)
@@ -32,7 +32,7 @@ class DbConnect:
 
         return db
 
-    def db_connect(self):
+    def db_connect(self) -> psycopg2.extensions.connection:
         print(f'Connecting to {self.host}')
         return psycopg2.connect(
             host=self.host,
@@ -42,7 +42,7 @@ class DbConnect:
             password=self.password
         )
 
-def db_populate(self, data: dict, conn) -> bool:
+def db_populate(data: dict, conn: psycopg2.extensions.connection) -> bool:
     rows = []
     for row in data:
         rows.append((row['CNPJ_FUNDO'].translate(str.maketrans('', '', string.punctuation)), row['VL_QUOTA'], row['DT_COMPTC']))
@@ -58,7 +58,8 @@ def db_populate(self, data: dict, conn) -> bool:
 
     return True
 
-def db_select(conn, init_date, end_date, cnpj='%%'):
+def db_select(conn: psycopg2.extensions.connection, init_date: datetime.datetime, end_date: datetime.datetime, cnpj: str='%%') -> list:
+    print(type(end_date))
     with conn.cursor() as cursor:
         args_str = cursor.mogrify(
             'cnpj = %s AND date_report BETWEEN %s AND %s',
