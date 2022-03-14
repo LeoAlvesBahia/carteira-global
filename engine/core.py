@@ -1,4 +1,5 @@
 from datetime import datetime
+from pickletools import float8
 from tracemalloc import start
 
 from flask import Flask, request
@@ -31,14 +32,15 @@ def rentability(cnpj):
             cnpj=cnpj
         )
 
-    rentab = tools.get_rentability(tools.get_factor(response))
+    if 'full' == args.get('return', 'init_final'):
+        return tools.full_return(response, args.get('invest_value', None))
 
+    rentab = tools.get_rentability(response)
     if 'invest_value' in args.keys():
         return {
             'rentability': rentab,
-            'equity_value': args['invest_value'] * rentab
+            'equity_value': (rentab + 1) * float(args['invest_value'])
         }
-
     return {
         'rentability': rentab
     }

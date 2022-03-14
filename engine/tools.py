@@ -1,6 +1,5 @@
 import csv
 from itertools import cycle
-from pickletools import float8
 import string
 from datetime import datetime
 from io import StringIO
@@ -43,15 +42,27 @@ def check_cnpj(cnpj: str) -> bool:
 
     return True
 
-def get_factor(data) -> float8:
+def get_rentability(data: list) -> float:
     start_quote = data[0]['quote_value']
     end_quote = data[-1]['quote_value']
 
-    factor = start_quote / end_quote
+    factor = end_quote / start_quote
 
-    return factor
+    return factor - 1
 
-def get_rentability(factor) -> float8:
-    rentab = (factor - 1) * 100
-
-    return rentab
+def full_return(response: list, invest_value=None):
+    data = [{
+        'date_report': response[0]['date_report'],
+        'rentability': 0,
+        'equity_value': response[0]['quote_value']
+    }]
+    for i in range(1, len(response)):
+        rentab = get_rentability([response[i-1], response[i]])
+        data.append({
+            'date_report': response[i]['date_report'],
+            'rentability': rentab * 100,
+            'equity_value': (rentab + 1) * data[-1]['equity_value']
+        })
+    return {
+        'data': data
+    }
