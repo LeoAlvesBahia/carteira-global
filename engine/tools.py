@@ -5,7 +5,7 @@ from datetime import datetime
 from io import StringIO
 from urllib.request import urlopen
 
-from database.DbConnect import DbConnect
+from database.DbConnect import DbConnect, db_populate
 
 
 def csv_to_dict(url) -> csv.DictReader:
@@ -20,7 +20,7 @@ def crawler(url: str):
 
     db = DbConnect('dev')
     with db.db_connect() as conn:
-        populate_response = db.db_populate(data, conn)
+        populate_response = db_populate(data, conn)
     return populate_response
 
 # https://programandoautomacao.blogspot.com/2020/10/python-uma-funcao-pythonica-para_15.html

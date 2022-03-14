@@ -1,5 +1,6 @@
 import string
 from configparser import ConfigParser
+from datetime import datetime
 
 import psycopg2
 
@@ -41,27 +42,37 @@ class DbConnect:
             password=self.password
         )
 
-    def db_populate(self, data: dict, conn) -> bool:
-        rows = []
-        for row in data:
-            rows.append((row['CNPJ_FUNDO'].translate(str.maketrans('', '', string.punctuation)), row['VL_QUOTA'], row['DT_COMPTC']))
+def db_populate(self, data: dict, conn) -> bool:
+    rows = []
+    for row in data:
+        rows.append((row['CNPJ_FUNDO'].translate(str.maketrans('', '', string.punctuation)), row['VL_QUOTA'], row['DT_COMPTC']))
 
-        with conn.cursor() as cursor:
-            print('Starting query setup')
-            args_str = ','.join(cursor.mogrify('(%s, %s, %s)', row).decode('UTF-8') for row in rows)
-            print('Inserting into database')
-            cursor.execute(f"""
-                INSERT INTO fund_report (cnpj, quote_value, date_report)
-                VALUES {args_str}
-            """)
-    
-        return True
+    with conn.cursor() as cursor:
+        print('Starting query setup')
+        args_str = ','.join(cursor.mogrify('(%s, %s, %s)', row).decode('UTF-8') for row in rows)
+        print('Inserting into database')
+        cursor.execute(f"""
+            INSERT INTO fund_report (cnpj, quote_value, date_report)
+            VALUES {args_str}
+        """)
 
-    def db_select(self, conn, args={}):
-        with conn.cursor() as cursor:
-            args_str = cursor.mogrify('CNPJ = %s')
-            cursor.execute(f"""
-                SELECT quote_value, date_report
-                FROM fund_report
-                WHERE {}
-            """)
+    return True
+
+def db_select(conn, init_date, end_date, cnpj='%%'):
+    with conn.cursor() as cursor:
+        args_str = cursor.mogrify(
+            'cnpj = %s AND date_report BETWEEN %s AND %s',
+            (cnpj, init_date, end_date)
+        ).decode('UTF-8')
+        cursor.execute(f"""
+            SELECT quote_value, date_report
+            FROM fund_report
+            WHERE {args_str}
+        """)
+        response = cursor.fetchall()
+        for i, value in enumerate(response):
+            response[i] = {
+                'quote_value': value[0],
+                'date_report': value[1].strftime('%Y-%m-%d')
+            }
+        return response
